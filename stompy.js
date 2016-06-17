@@ -19,7 +19,8 @@ var sprites = {
 	right: new sprite( 0, 0, 30, 38),
 	leftJump: new sprite (0, 38, 30, 38),
 	rightJump: new sprite (30, 0, 30, 38),
-	jet: new sprite(60, 0, 15, 21)
+	jet: new sprite(60, 0, 15, 21),
+	enemy: new sprite(78, 0, 35, 47)
 };	
 var cloud = new Image();
 cloud.src = 'cloud.png';
@@ -75,10 +76,7 @@ function init() {
 	jet = new entity(-100,-200, 15, 21);
 	
 	enemy = new entity(0, 0, 30, 30);
-	enemy.vx = ENEMY_VELOCITY;
-	enemyPlat = pick(platforms);
-	enemy.setBottom(enemyPlat.getTop());
-	enemy.setMidX(enemyPlat.getMidX());
+	moveEnemy();
 	
 	target = new entity (0, 0, 10, 20);
 	moveTarget();
@@ -110,7 +108,19 @@ function moveTarget() {
 	target.setMidX(platform.getMidX());
 	target.setMidY(platform.getTop() - platform.halfHeight);
 }
+function moveEnemy() {
+score += 20;
+	if(score > highScore) { 
+		highScore = score;
+		localStorage.setItem('high', highScore);
+}	
 
+
+enemy.vx = ENEMY_VELOCITY;
+	enemyPlat = pick(platforms);
+	enemy.setBottom(enemyPlat.getTop());
+	enemy.setMidX(enemyPlat.getMidX());
+}	
 function gameLoop() {
     updatePosition();
 	handleCollision();
@@ -207,6 +217,7 @@ function handleCollision() {
 	sliding = false;
 	
 	if(collideRect(player, enemy)) reset();
+	if(collideRect(jet, enemy)) moveEnemy(); 
 	
 	var platform, dx, dy;
 	for(var p=0; p<platforms.length;p++){
@@ -309,8 +320,7 @@ function updateCanvas() {
 	
 	drawSprite(sprite, player);
 	
-	ctx.fillStyle= 'green';
-	ctx.fillRect(enemy.x,enemy.y, enemy.width, enemy.height);
+	drawSprite(sprites.enemy,enemy);
 	
 
 	var platform;
